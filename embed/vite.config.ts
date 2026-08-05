@@ -1,73 +1,41 @@
 import path from 'path';
+import { fileURLToPath } from 'url';
 import react from '@vitejs/plugin-react';
 import tailwindcss from '@tailwindcss/vite';
 import { defineConfig } from 'vite';
 
-import runtimeErrorOverlay from '@replit/vite-plugin-runtime-error-modal';
+// Cross-version safe directory resolution for ESM
+const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
-const rawPort = process.env.PORT;
-
-if (!rawPort) {
-  throw new Error(
-    'PORT environment variable is required but was not provided.',
-  );
-}
-
-const port = Number(rawPort);
-
-if (Number.isNaN(port) || port <= 0) {
-  throw new Error(`Invalid PORT value: "${rawPort}"`);
-}
-
-const basePath = process.env.BASE_PATH;
-
-if (!basePath) {
-  throw new Error(
-    'BASE_PATH environment variable is required but was not provided.',
-  );
-}
+const rawPort = process.env.PORT || '3000';
+const port = Number(rawPort) || 3000;
+const basePath = process.env.BASE_PATH || '/';
 
 export default defineConfig({
   base: basePath,
   define: {
     'import.meta.env.VITE_TMDB_API_KEY': JSON.stringify(process.env.TMDB_API_KEY || ''),
-    // Optional: point the embed player at an external OMSS API (e.g. CF Worker).
-    // Leave empty to use relative /v1/... paths (default, works on Replit).
     'import.meta.env.VITE_OMSS_URL': JSON.stringify(process.env.VITE_OMSS_URL || ''),
   },
   plugins: [
     react(),
     tailwindcss(),
-    runtimeErrorOverlay(),
-    ...(process.env.NODE_ENV !== 'production' &&
-    process.env.REPL_ID !== undefined
-      ? [
-          await import('@replit/vite-plugin-cartographer').then((m) =>
-            m.cartographer({
-              root: path.resolve(import.meta.dirname, '..'),
-            }),
-          ),
-          await import('@replit/vite-plugin-dev-banner').then((m) =>
-            m.devBanner(),
-          ),
-        ]
-      : []),
   ],
   resolve: {
     alias: {
-      '@': path.resolve(import.meta.dirname, 'src'),
+      '@': path.resolve(__dirname, 'src'),
       '@assets': path.resolve(
-        import.meta.dirname,
+        __dirname,
         '..',
         '..',
-        'attached_assets',
+        'attached_assets'
       ),
     },
     dedupe: ['react', 'react-dom'],
   },
-  root: path.resolve(import.meta.dirname),
+  root: __dirname,
   build: {
-    outDir: path.resolve(import.meta.dirname, 'dist/public'),
+    outDir: path.resolve(__dirname, 'dist/public'),
     emptyOutDir: true,
   },
   server: {
