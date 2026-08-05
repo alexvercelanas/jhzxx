@@ -15,11 +15,11 @@
     "crypto-js": "^4.2.0",
     "dotenv": "^16.4.5"
   },
-  "devDependencies": {
+ "devDependencies": {
     "@types/crypto-js": "^4.2.2",
-    "@types/node": "catalog:",
-    "esbuild": "0.27.3",
-    "tsx": "catalog:",
-    "typescript": "~5.9.3"
+    "@types/node": "^20.10.0",
+    "esbuild": "^0.27.3",
+    "tsx": "^4.7.0",
+    "typescript": "^5.9.3"
   }
 }
