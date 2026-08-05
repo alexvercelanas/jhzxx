@@ -1,0 +1,27 @@
+kind = "web"
+previewPath = "/"
+title = "CinePro Embed"
+version = "1.0.0"
+id = "artifacts/embed"
+router = "path"
+
+[[services]]
+name = "web"
+paths = [ "/" ]
+localPort = 25325
+
+[services.development]
+run = "pnpm --filter @workspace/embed run dev"
+
+[services.production]
+build = [ "pnpm", "--filter", "@workspace/embed", "run", "build" ]
+serve = "static"
+publicDir = "artifacts/embed/dist/public"
+
+[[services.production.rewrites]]
+from = "/*"
+to = "/index.html"
+
+[services.env]
+PORT = "25325"
+BASE_PATH = "/"

@@ -1,0 +1,45 @@
+kind = "api"
+previewPath = "/api"
+title = "CinePro"
+version = "1.0.0"
+id = "3B4_FFSkEVBkAeYMFRJ2e"
+
+[[services]]
+localPort = 8080
+name = "API Server"
+paths = ["/v1", "/stremio", "/healthz"]
+
+[services.development]
+run = "pnpm --filter @workspace/api-server run dev"
+
+[services.development.env]
+PORT = "8080"
+HOST = "0.0.0.0"
+NODE_ENV = "development"
+CACHE_TYPE = "memory"
+STREMIO_ADDON = "true"
+CORS_ORIGIN = "*"
+MCP_ENABLED = "false"
+
+[services.production]
+
+[services.production.build]
+args = ["pnpm", "--filter", "@workspace/api-server", "run", "build"]
+
+[services.production.build.env]
+NODE_ENV = "production"
+
+[services.production.run]
+args = ["node", "--enable-source-maps", "artifacts/api-server/dist/server.mjs"]
+
+[services.production.run.env]
+PORT = "8080"
+HOST = "0.0.0.0"
+NODE_ENV = "production"
+CACHE_TYPE = "memory"
+STREMIO_ADDON = "true"
+CORS_ORIGIN = "*"
+MCP_ENABLED = "false"
+
+[services.production.health.startup]
+path = "/healthz"
