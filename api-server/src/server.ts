@@ -128,7 +128,11 @@ async function main() {
         if (typeof payload !== 'string') return payload;
         try {
             const data = JSON.parse(payload);
-            if (!data || !Array.isArray(data.subtitles) || data.subtitles.length > 0) return payload;
+             if (!data) return payload;
+            // Normalize missing subtitles field to empty array so the check below works
+            if (!Array.isArray(data.subtitles)) data.subtitles = [];
+            // Already have subtitles — nothing to do
+            if (data.subtitles.length > 0) return payload;
             // Subtitles are empty — fetch from sub.1x2.space as fallback
             const subs = movieMatch
                 ? await fetchFallbackSubtitles(movieMatch[1], 'movie')
