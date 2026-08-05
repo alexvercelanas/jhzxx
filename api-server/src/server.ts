@@ -93,11 +93,11 @@ async function main() {
     registry.register(new VidRiftProvider());
     registry.register(new XPassProvider());
 
+    
     // Subtitle fallback: if all providers returned no subtitles, fetch directly
     // from sub.1x2.space so subtitles work even when VidRift is blocked (e.g. on Render).
     const SUB_BASE = 'https://sub.1x2.space';
     const SUB_UA = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36';
-
     async function fetchFallbackSubtitles(tmdbId: string, type: 'movie' | 'tv', s?: string, e?: string) {
         try {
             const path = type === 'movie'
@@ -117,9 +117,7 @@ async function main() {
             return [];
         }
     }
-
     const fastify = server.getInstance();
-
     // Hook into movie sources response
     fastify.addHook('onSend', async (request, _reply, payload) => {
         const url = request.url;
@@ -128,16 +126,13 @@ async function main() {
         const tvMatch = url.match(/^\/v1\/tv\/(\d+)\/seasons\/(\d+)\/episodes\/(\d+)/);
         if (!movieMatch && !tvMatch) return payload;
         if (typeof payload !== 'string') return payload;
-
         try {
             const data = JSON.parse(payload);
             if (!data || !Array.isArray(data.subtitles) || data.subtitles.length > 0) return payload;
-
             // Subtitles are empty — fetch from sub.1x2.space as fallback
             const subs = movieMatch
                 ? await fetchFallbackSubtitles(movieMatch[1], 'movie')
                 : await fetchFallbackSubtitles(tvMatch![1], 'tv', tvMatch![2], tvMatch![3]);
-
             if (subs.length === 0) return payload;
             data.subtitles = subs;
             return JSON.stringify(data);
@@ -145,6 +140,7 @@ async function main() {
             return payload;
         }
     });
+
 
     // Anime (AniList ID + episode + audio track) — not TMDB-keyed, so it's
     // wired up as its own route instead of going through the OMSS movies/tv
