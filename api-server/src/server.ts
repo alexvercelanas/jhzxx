@@ -32,7 +32,7 @@ async function main() {
         cache: {
             type: (process.env.CACHE_TYPE as 'memory' | 'redis') ?? 'memory',
             ttl: {
-                sources: 60 * 60,
+                sources: 60 * 60 * 6,
                 subtitles: 60 * 60 * 24
             },
             redis: {
